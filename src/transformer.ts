@@ -218,6 +218,7 @@ function generateZodSchema(
 
   return z.object({
     sys: z.object({
+      id: z.string(),
       contentType: z.object({
         sys: z.object({ id: z.literal(contentType.sys.id) }),
       }),
