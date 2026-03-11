@@ -1,5 +1,718 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`contentful-to-zod > should generate reference schemas for 'contentful' 1`] = `
+"import { z } from "zod";
+import type { Document } from '@contentful/rich-text-types';
+
+export const contentfulImageSchema = z.object({
+    sys: z.object({
+    type: z.literal("Asset")
+  }),
+    fields: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    file: z.object({
+    url: z.string(),
+    details: z.object({
+    size: z.number(),
+    image: z.object({
+    width: z.number(),
+    height: z.number()
+  })
+  }),
+    fileName: z.string(),
+    contentType: z.string()
+  })
+  })
+  });
+
+export type ContentfulImage = z.infer<typeof contentfulImageSchema>;
+
+export const contentfulRichTextSchema = z.unknown() as z.ZodType<Document>;
+
+export type ContentfulRichText = z.infer<typeof contentfulRichTextSchema>;
+
+const _baseLink = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("link")
+  })
+  })
+  }),
+    fields: z.object({
+    label: z.string(),
+    href: z.string().optional(),
+    page: z.unknown()
+  })
+  });
+
+export type Link = z.infer<typeof _baseLink> & { fields: {page?: string | undefined} };
+
+export const linkSchema: z.ZodType<Link> = _baseLink.extend({
+          fields: _baseLink.shape.fields.extend({
+            page: z.string().optional()
+          })
+        });
+
+const _baseShortLink = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("shortLink")
+  })
+  })
+  }),
+    fields: z.object({
+    label: z.string(),
+    short: z.string().optional(),
+    href: z.string().optional(),
+    page: z.unknown()
+  })
+  });
+
+export type ShortLink = z.infer<typeof _baseShortLink> & { fields: {page?: string | undefined} };
+
+export const shortLinkSchema: z.ZodType<ShortLink> = _baseShortLink.extend({
+          fields: _baseShortLink.shape.fields.extend({
+            page: z.string().optional()
+          })
+        });
+
+const _baseImageStack3 = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("imageStack3")
+  })
+  })
+  }),
+    fields: z.object({
+    images: z.array(contentfulImageSchema),
+    border: z.boolean().optional()
+  })
+  });
+
+export type ImageStack3 = z.infer<typeof _baseImageStack3> & { fields: {} };
+
+export const imageStack3Schema: z.ZodType<ImageStack3> = _baseImageStack3.extend({
+          fields: _baseImageStack3.shape.fields.extend({
+            
+          })
+        });
+
+const _baseImageStack5 = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("imageStack5")
+  })
+  })
+  }),
+    fields: z.object({
+    images: z.array(contentfulImageSchema),
+    border: z.boolean().optional()
+  })
+  });
+
+export type ImageStack5 = z.infer<typeof _baseImageStack5> & { fields: {} };
+
+export const imageStack5Schema: z.ZodType<ImageStack5> = _baseImageStack5.extend({
+          fields: _baseImageStack5.shape.fields.extend({
+            
+          })
+        });
+
+const _baseSEO = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("seo")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    image: contentfulImageSchema.optional()
+  })
+  });
+
+export type SEO = z.infer<typeof _baseSEO> & { fields: {} };
+
+export const seoSchema: z.ZodType<SEO> = _baseSEO.extend({
+          fields: _baseSEO.shape.fields.extend({
+            
+          })
+        });
+
+const _baseHero = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("hero")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    cta: z.unknown(),
+    relatedLinks: z.unknown()
+  })
+  });
+
+export type Hero = z.infer<typeof _baseHero> & { fields: {cta?: string | undefined,
+relatedLinks?: string[] | undefined} };
+
+export const heroSchema: z.ZodType<Hero> = _baseHero.extend({
+          fields: _baseHero.shape.fields.extend({
+            cta: z.string().optional(),
+relatedLinks: z.array(z.string()).optional()
+          })
+        });
+
+const _baseFooter = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("footer")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+    cta: z.unknown(),
+    ctaBody: contentfulRichTextSchema,
+    addressTitle: z.string(),
+    addressEmail: z.unknown(),
+    addressPhone: z.unknown(),
+    addressOrg: z.string(),
+    linksTitle: z.string(),
+    linksItems: z.unknown(),
+    aboutTitle: z.string(),
+    aboutBody: contentfulRichTextSchema,
+    aboutCta: z.unknown(),
+    copyright: z.string()
+  })
+  });
+
+export type Footer = z.infer<typeof _baseFooter> & { fields: {cta: string,
+addressEmail: string,
+addressPhone: string,
+linksItems: string[],
+aboutCta?: string | undefined} };
+
+export const footerSchema: z.ZodType<Footer> = _baseFooter.extend({
+          fields: _baseFooter.shape.fields.extend({
+            cta: z.string(),
+addressEmail: z.string(),
+addressPhone: z.string(),
+linksItems: z.array(z.string()),
+aboutCta: z.string().optional()
+          })
+        });
+
+const _baseHeader = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("header")
+  })
+  })
+  }),
+    fields: z.object({
+    links: z.unknown(),
+    cta: z.unknown()
+  })
+  });
+
+export type Header = z.infer<typeof _baseHeader> & { fields: {links: string[],
+cta: string} };
+
+export const headerSchema: z.ZodType<Header> = _baseHeader.extend({
+          fields: _baseHeader.shape.fields.extend({
+            links: z.array(z.string()),
+cta: z.string()
+          })
+        });
+
+const _baseMarketingBannerCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("marketingBannerCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    cta: z.unknown(),
+    imageStack: z.unknown()
+  })
+  });
+
+export type MarketingBannerCard = z.infer<typeof _baseMarketingBannerCard> & { fields: {cta: string,
+imageStack: string} };
+
+export const marketingBannerCardSchema: z.ZodType<MarketingBannerCard> = _baseMarketingBannerCard.extend({
+          fields: _baseMarketingBannerCard.shape.fields.extend({
+            cta: z.string(),
+imageStack: z.string()
+          })
+        });
+
+const _baseContentCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("contentCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    cta: z.unknown()
+  })
+  });
+
+export type ContentCard = z.infer<typeof _baseContentCard> & { fields: {cta?: string | undefined} };
+
+export const contentCardSchema: z.ZodType<ContentCard> = _baseContentCard.extend({
+          fields: _baseContentCard.shape.fields.extend({
+            cta: z.string().optional()
+          })
+        });
+
+const _baseConsultationCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("consultationCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    cta: z.unknown(),
+    imageStack: z.unknown()
+  })
+  });
+
+export type ConsultationCard = z.infer<typeof _baseConsultationCard> & { fields: {cta?: string | undefined,
+imageStack: string} };
+
+export const consultationCardSchema: z.ZodType<ConsultationCard> = _baseConsultationCard.extend({
+          fields: _baseConsultationCard.shape.fields.extend({
+            cta: z.string().optional(),
+imageStack: z.string()
+          })
+        });
+
+const _baseClientsCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("clientsCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    imageStack: z.unknown()
+  })
+  });
+
+export type ClientsCard = z.infer<typeof _baseClientsCard> & { fields: {imageStack: string} };
+
+export const clientsCardSchema: z.ZodType<ClientsCard> = _baseClientsCard.extend({
+          fields: _baseClientsCard.shape.fields.extend({
+            imageStack: z.string()
+          })
+        });
+
+const _baseTeaserCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("teaserCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: z.string(),
+    cta: z.unknown(),
+    image: contentfulImageSchema
+  })
+  });
+
+export type TeaserCard = z.infer<typeof _baseTeaserCard> & { fields: {cta: string} };
+
+export const teaserCardSchema: z.ZodType<TeaserCard> = _baseTeaserCard.extend({
+          fields: _baseTeaserCard.shape.fields.extend({
+            cta: z.string()
+          })
+        });
+
+const _basePromotionCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("promotionCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: z.string(),
+    cta: z.unknown(),
+    image: contentfulImageSchema
+  })
+  });
+
+export type PromotionCard = z.infer<typeof _basePromotionCard> & { fields: {cta: string} };
+
+export const promotionCardSchema: z.ZodType<PromotionCard> = _basePromotionCard.extend({
+          fields: _basePromotionCard.shape.fields.extend({
+            cta: z.string()
+          })
+        });
+
+const _baseContentWithImageCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("contentWithImageCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    cta: z.unknown(),
+    image: contentfulImageSchema
+  })
+  });
+
+export type ContentWithImageCard = z.infer<typeof _baseContentWithImageCard> & { fields: {cta: string} };
+
+export const contentWithImageCardSchema: z.ZodType<ContentWithImageCard> = _baseContentWithImageCard.extend({
+          fields: _baseContentWithImageCard.shape.fields.extend({
+            cta: z.string()
+          })
+        });
+
+const _baseImageCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("imageCard")
+  })
+  })
+  }),
+    fields: z.object({
+    image: contentfulImageSchema
+  })
+  });
+
+export type ImageCard = z.infer<typeof _baseImageCard> & { fields: {} };
+
+export const imageCardSchema: z.ZodType<ImageCard> = _baseImageCard.extend({
+          fields: _baseImageCard.shape.fields.extend({
+            
+          })
+        });
+
+const _baseFormCard = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("formCard")
+  })
+  })
+  }),
+    fields: z.object({
+    title: z.string(),
+    body: contentfulRichTextSchema,
+    form: z.enum(["contact","influencer-collaboration","influencer-signup","panel-feedback","panel-signup","brand-request","optimization-request"])
+  })
+  });
+
+export type FormCard = z.infer<typeof _baseFormCard> & { fields: {} };
+
+export const formCardSchema: z.ZodType<FormCard> = _baseFormCard.extend({
+          fields: _baseFormCard.shape.fields.extend({
+            
+          })
+        });
+
+const _baseBentoRow1 = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("bentoRow1")
+  })
+  })
+  }),
+    fields: z.object({
+    column1: z.unknown(),
+    column2: z.unknown()
+  })
+  });
+
+export type BentoRow1 = z.infer<typeof _baseBentoRow1> & { fields: {column1: string,
+column2: string} };
+
+export const bentoRow1Schema: z.ZodType<BentoRow1> = _baseBentoRow1.extend({
+          fields: _baseBentoRow1.shape.fields.extend({
+            column1: z.string(),
+column2: z.string()
+          })
+        });
+
+const _baseBentoRow2 = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("bentoRow2")
+  })
+  })
+  }),
+    fields: z.object({
+    column1: z.unknown(),
+    column2: z.unknown()
+  })
+  });
+
+export type BentoRow2 = z.infer<typeof _baseBentoRow2> & { fields: {column1: string,
+column2: string} };
+
+export const bentoRow2Schema: z.ZodType<BentoRow2> = _baseBentoRow2.extend({
+          fields: _baseBentoRow2.shape.fields.extend({
+            column1: z.string(),
+column2: z.string()
+          })
+        });
+
+const _baseBentoRow3 = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("bentoRow3")
+  })
+  })
+  }),
+    fields: z.object({
+    column1: z.unknown(),
+    column2: z.unknown(),
+    column3: z.unknown()
+  })
+  });
+
+export type BentoRow3 = z.infer<typeof _baseBentoRow3> & { fields: {column1: string,
+column2: string,
+column3: string} };
+
+export const bentoRow3Schema: z.ZodType<BentoRow3> = _baseBentoRow3.extend({
+          fields: _baseBentoRow3.shape.fields.extend({
+            column1: z.string(),
+column2: z.string(),
+column3: z.string()
+          })
+        });
+
+const _baseBentoRow4 = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("bentoRow4")
+  })
+  })
+  }),
+    fields: z.object({
+    column1: z.unknown()
+  })
+  });
+
+export type BentoRow4 = z.infer<typeof _baseBentoRow4> & { fields: {column1: string} };
+
+export const bentoRow4Schema: z.ZodType<BentoRow4> = _baseBentoRow4.extend({
+          fields: _baseBentoRow4.shape.fields.extend({
+            column1: z.string()
+          })
+        });
+
+const _basePage = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("page")
+  })
+  })
+  }),
+    fields: z.object({
+    breadcrumbs: z.boolean().optional(),
+    breadcrumbLabel: z.string().optional(),
+    path: z.string(),
+    hero: z.unknown(),
+    content: z.unknown(),
+    seo: z.unknown(),
+    layout: z.unknown()
+  })
+  });
+
+export type Page = z.infer<typeof _basePage> & { fields: {hero: string,
+content: string[],
+seo?: string | undefined,
+layout: string} };
+
+export const pageSchema: z.ZodType<Page> = _basePage.extend({
+          fields: _basePage.shape.fields.extend({
+            hero: z.string(),
+content: z.array(z.string()),
+seo: z.string().optional(),
+layout: z.string()
+          })
+        });
+
+const _baseLayout = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("layout")
+  })
+  })
+  }),
+    fields: z.object({
+    header: z.unknown(),
+    footer: z.unknown(),
+    seo: z.unknown()
+  })
+  });
+
+export type Layout = z.infer<typeof _baseLayout> & { fields: {header: string,
+footer: string,
+seo: string} };
+
+export const layoutSchema: z.ZodType<Layout> = _baseLayout.extend({
+          fields: _baseLayout.shape.fields.extend({
+            header: z.string(),
+footer: z.string(),
+seo: z.string()
+          })
+        });
+
+export const referenceMap = {
+  link: {
+    page: { types: ["page"], multiple: false, optional: true }
+  },
+  shortLink: {
+    page: { types: ["page"], multiple: false, optional: true }
+  },
+  hero: {
+    cta: { types: ["link"], multiple: false, optional: true },
+    relatedLinks: { types: ["link"], multiple: true, optional: true }
+  },
+  footer: {
+    cta: { types: ["link"], multiple: false, optional: false },
+    addressEmail: { types: ["link"], multiple: false, optional: false },
+    addressPhone: { types: ["link"], multiple: false, optional: false },
+    linksItems: { types: ["link"], multiple: true, optional: false },
+    aboutCta: { types: ["link"], multiple: false, optional: true }
+  },
+  header: {
+    links: { types: ["shortLink"], multiple: true, optional: false },
+    cta: { types: ["shortLink"], multiple: false, optional: false }
+  },
+  marketingBannerCard: {
+    cta: { types: ["link"], multiple: false, optional: false },
+    imageStack: { types: ["imageStack3"], multiple: false, optional: false }
+  },
+  contentCard: {
+    cta: { types: ["link"], multiple: false, optional: true }
+  },
+  consultationCard: {
+    cta: { types: ["link"], multiple: false, optional: true },
+    imageStack: { types: ["imageStack3"], multiple: false, optional: false }
+  },
+  clientsCard: {
+    imageStack: { types: ["imageStack5"], multiple: false, optional: false }
+  },
+  teaserCard: {
+    cta: { types: ["link"], multiple: false, optional: false }
+  },
+  promotionCard: {
+    cta: { types: ["link"], multiple: false, optional: false }
+  },
+  contentWithImageCard: {
+    cta: { types: ["link"], multiple: false, optional: false }
+  },
+  bentoRow1: {
+    column1: { types: ["marketingBannerCard","imageCard","formCard","contentCard","contentWithImageCard"], multiple: false, optional: false },
+    column2: { types: ["contentCard","imageCard"], multiple: false, optional: false }
+  },
+  bentoRow2: {
+    column1: { types: ["contentCard","imageCard"], multiple: false, optional: false },
+    column2: { types: ["contentCard","imageCard","contentWithImageCard"], multiple: false, optional: false }
+  },
+  bentoRow3: {
+    column1: { types: ["promotionCard","contentCard","imageCard"], multiple: false, optional: false },
+    column2: { types: ["teaserCard","imageCard"], multiple: false, optional: false },
+    column3: { types: ["teaserCard","imageCard"], multiple: false, optional: false }
+  },
+  bentoRow4: {
+    column1: { types: ["imageCard","consultationCard","clientsCard"], multiple: false, optional: false }
+  },
+  page: {
+    hero: { types: ["hero"], multiple: false, optional: false },
+    content: { types: ["bentoRow1","bentoRow2","bentoRow3","bentoRow4"], multiple: true, optional: false },
+    seo: { types: ["seo"], multiple: false, optional: true },
+    layout: { types: ["layout"], multiple: false, optional: false }
+  },
+  layout: {
+    header: { types: ["header"], multiple: false, optional: false },
+    footer: { types: ["footer"], multiple: false, optional: false },
+    seo: { types: ["seo"], multiple: false, optional: false }
+  }
+} as const;"
+`;
+
+exports[`contentful-to-zod > should generate reference schemas for 'contentful-settings' 1`] = `
+"import { z } from "zod";
+
+
+
+const _baseSettings = z.object({
+    sys: z.object({
+    contentType: z.object({
+    sys: z.object({
+    id: z.literal("settings")
+  })
+  })
+  }),
+    fields: z.object({
+    name: z.string(),
+    configuration: z.unknown(),
+    startDate: z.string().datetime({ offset: true }),
+    endDate: z.string().datetime({ offset: true }).optional()
+  })
+  });
+
+export type Settings = z.infer<typeof _baseSettings> & { fields: {} };
+
+export const settingsSchema: z.ZodType<Settings> = _baseSettings.extend({
+          fields: _baseSettings.shape.fields.extend({
+            
+          })
+        });"
+`;
+
 exports[`contentful-to-zod > should generate schema for 'contentful' 1`] = `
 "import { z } from "zod";
 import type { Document } from '@contentful/rich-text-types';

@@ -165,6 +165,7 @@ function resolveConfig(options: PrintConfig) {
       return `${contentTypeId}Schema`;
     },
     flat: false,
+    reference: false,
     ...options,
   };
 }
@@ -222,6 +223,17 @@ export function printTypescriptSchemas(
     })
     .join("\n\n");
 
+  const useReference = resolvedConfig.reference === true;
+
+  /**
+   * Collect reference metadata per content type for the referenceMap export.
+   * Populated during schema generation, emitted at the end when --reference is enabled.
+   */
+  const allFieldReferences = new Map<
+    string,
+    Map<string, { types: string[]; multiple: boolean; optional: boolean }>
+  >();
+
   const schemaDefinitions = Object.entries(schemas)
     .map(([name, schema]) => {
       const fieldReferences = Object.entries(schema.shape.fields.shape).reduce(
@@ -257,6 +269,17 @@ export function printTypescriptSchemas(
         >()
       );
 
+      if (useReference && fieldReferences.size > 0) {
+        allFieldReferences.set(name, fieldReferences);
+      }
+
+      /**
+       * When --reference is enabled, reference fields use z.string() (entry IDs)
+       * instead of z.lazy(() => schema). Types also use string instead of nested
+       * content types. This produces flat schemas suitable for storing unresolved
+       * entries in a content store, with resolution happening on-demand later.
+       */
+
       return [
         `const ${toBaseSchemaName(name)} = ${zodToString(schema, resolvedConfig)};`,
 
@@ -264,11 +287,16 @@ export function printTypescriptSchemas(
           name
         )}> & { fields: {${[...fieldReferences.entries()]
           .map(
-            ([field, reference]) =>
-              `${field}${reference.optional ? "?" : ""}: (${reference.types
+            ([field, reference]) => {
+              if (useReference) {
+                const type = reference.multiple ? "string[]" : "string";
+                return `${field}${reference.optional ? "?" : ""}: ${type}${reference.optional ? " | undefined" : ""}`;
+              }
+              return `${field}${reference.optional ? "?" : ""}: (${reference.types
                 .map(resolvedConfig.toTypeName)
                 .concat(reference.optional ? ["undefined"] : [])
-                .join(" | ")})${reference.multiple ? "[]" : ""}`
+                .join(" | ")})${reference.multiple ? "[]" : ""}`;
+            }
           )
           .join(",\n")}} };`,
 
@@ -278,13 +306,18 @@ export function printTypescriptSchemas(
           fields: ${toBaseSchemaName(name)}.shape.fields.extend({
             ${[...fieldReferences.entries()]
           .map(
-            ([field, reference]) =>
-              `${field}: z.lazy(() => ${reference.multiple ? "z.array(" : ""}${reference.types.length === 1
+            ([field, reference]) => {
+              if (useReference) {
+                const schema = reference.multiple ? "z.array(z.string())" : "z.string()";
+                return `${field}: ${schema}${reference.optional ? ".optional()" : ""}`;
+              }
+              return `${field}: z.lazy(() => ${reference.multiple ? "z.array(" : ""}${reference.types.length === 1
                 ? resolvedConfig.toSchemaName(reference.types[0])
                 : `z.union([${reference.types
                   .map(resolvedConfig.toSchemaName)
                   .join(", ")}])`
-              }${reference.multiple ? ")" : ""})${reference.optional ? ".optional()" : ""}`
+              }${reference.multiple ? ")" : ""})${reference.optional ? ".optional()" : ""}`;
+            }
           )
           .join(",\n")}
           })
@@ -293,9 +326,32 @@ export function printTypescriptSchemas(
     })
     .join("\n\n");
 
-  const content = [imports, internalDefinitions, schemaDefinitions].join(
-    "\n\n"
-  );
+  const parts = [imports, internalDefinitions, schemaDefinitions];
+
+  /**
+   * When --reference is enabled, export a referenceMap that maps each content
+   * type to its reference fields with metadata (referenced types, cardinality).
+   * Resolution wrappers use this to know which fields need resolving and to
+   * which content types they point.
+   */
+  if (useReference && allFieldReferences.size > 0) {
+    const referenceMapEntries = [...allFieldReferences.entries()]
+      .map(([contentType, fields]) => {
+        const fieldEntries = [...fields.entries()]
+          .map(([field, ref]) => {
+            return `    ${field}: { types: ${JSON.stringify(ref.types)}, multiple: ${ref.multiple}, optional: ${ref.optional} }`;
+          })
+          .join(",\n");
+        return `  ${contentType}: {\n${fieldEntries}\n  }`;
+      })
+      .join(",\n");
+
+    parts.push(
+      `export const referenceMap = {\n${referenceMapEntries}\n} as const;`
+    );
+  }
+
+  const content = parts.join("\n\n");
 
   return content;
 }

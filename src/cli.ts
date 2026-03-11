@@ -40,6 +40,11 @@ async function main(): Promise<void> {
       "Generate flat Zod schemas without references to other schemas",
       false
     )
+    .option(
+      "-r, --reference",
+      "Emit reference fields as z.string() (entry IDs) instead of z.lazy(). Also exports a referenceMap for resolution.",
+      false
+    )
     .version(version);
 
   program.parse();

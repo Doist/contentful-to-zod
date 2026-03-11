@@ -77,6 +77,16 @@ export type PrintConfig = SharedConfig & {
    */
   flat?: boolean;
 
+  /**
+   * Whether to emit reference fields as z.string() (entry IDs) instead of
+   * z.lazy(() => schema). When enabled, the generated schemas validate flat
+   * entries where references are stored as string IDs rather than resolved
+   * nested objects. A referenceMap constant is also exported, mapping each
+   * content type's fields to their referenced content type IDs.
+   * @default false
+   */
+  reference?: boolean;
+
   toTypeName?: (entity: string) => string;
   toSchemaName?: (entity: string) => string;
 };
