@@ -77,6 +77,22 @@ export type PrintConfig = SharedConfig & {
    */
   flat?: boolean;
 
+  /**
+   * Maximum depth for nested entry validation per content type.
+   * Nested entries beyond this depth become z.unknown().optional().
+   * 
+   * Can be a number (applies to all) or an object with per-schema depths:
+   * @example
+   * ```js
+   * includeDepth: {
+   *   integrationsTodoistHome: 4,
+   *   integrationsTodoistCustomIntegration: 2,
+   *   default: 10,
+   * }
+   * ```
+   */
+  includeDepth?: Record<string, number> | number;
+
   toTypeName?: (entity: string) => string;
   toSchemaName?: (entity: string) => string;
 };
